@@ -8,6 +8,11 @@
 
 import Foundation
 
+enum Direction {
+    case Left;
+    case Right;
+}
+
 class Game {
 
     /// The grid that stores all 
@@ -76,6 +81,14 @@ class Game {
     /// Rotates the current Tetromino
     func rotate() {
         currentTetromino?.rotate()
+        
+        if findCollisions() { unrotate() }
+    }
+    
+    /// Undoes the last rotation
+    func unrotate() {
+        // Just rotate three times :P
+        for i in 0..<3 { currentTetromino?.rotate() }
     }
     
     /// Moves the current tetromino one row down
@@ -222,7 +235,27 @@ class Game {
     
     /// Sets the x coordinate of the current tetromino
     func setXCoordinateForCurrentTetromino(xCoordinate: Int) {
-        currentTetromino?.rootTile.localCoordinates.x = xCoordinate
+        if let unwrappedTetromino = currentTetromino {
+            let oldXCoordinate = unwrappedTetromino.rootTile.worldCoordinates.x
+            let moveBy = xCoordinate - oldXCoordinate
+            for i in 0..<abs(moveBy) {
+                move(moveBy < 0 ? .Left : .Right)
+            }
+        }
+    }
+    
+    /// Moves the current tetromino to the left or right
+    func move(direction: Direction) -> Bool {
+        // Calculate x delta
+        let deltaX = direction == .Left ? -1 : 1
+        // Move
+        currentTetromino?.rootTile.localCoordinates.x += deltaX
+        // Check for collisions
+        let collided = findCollisions()
+        // Unmove if there was a collision
+        if collided { currentTetromino?.rootTile.localCoordinates.x -= deltaX }
+        // Return the collision result
+        return collided
     }
     
 }
