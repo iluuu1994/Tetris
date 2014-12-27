@@ -82,7 +82,7 @@ class GameBoardView: UIView {
     /// Calculates the x tile coordinate for a pixel coordinate
     func xCoordinateForPoint(xPixelCoordinate: Float) -> Int {
         let result = Int(ceilf(xPixelCoordinate / Float(sizeOfTile().width)))
-        return max(min(result, game.grid.width), 0)
+        return result
     }
     
     /// Calculates the size of a single tile
