@@ -6,7 +6,7 @@
 //  Copyright (c) 2014 Ilija Tovilo. All rights reserved.
 //
 
-import Foundation
+import UIKit
 
 enum Direction {
     case Left;
@@ -14,12 +14,20 @@ enum Direction {
 }
 
 class Game {
+    
+    // MARK: - Properties -
 
     /// The grid that stores all 
     let grid = Matrix<Tile?>(width: 10, height: 30, repeatedValue: nil)
     
     /// The current Tetromino controlled by the user
     var currentTetromino: Tetromino?
+    
+    /// An instance of a delegate
+    var delegate: GameDelegate?
+    
+    
+    // MARK: - Init -
     
     init() {
         spawnRandomTetromino()
@@ -129,17 +137,28 @@ class Game {
         return false
     }
     
+    /// Sends the game over info to the delegate
+    var gameOver: Bool = false {
+        didSet {
+            delegate?.gameOver()
+        }
+    }
+    
     
     // MARK: - Methods -
     
     /// Spawn a random tetromino
     func spawnRandomTetromino() {
         currentTetromino = randomTetromino()
+        if findCollisions() { gameOver = true }
     }
     
     /// Generates a random tetromino
     func randomTetromino() -> Tetromino {
         var tiles: [Tile]!
+        
+        var coordinates: [TileCoordinates]!
+        var color: UIColor!
         
         switch arc4random_uniform(7) {
         case 0:
@@ -147,90 +166,101 @@ class Game {
             //  [ ][ ]
             //  [ ][ ]
             //
-            tiles = [
-                Tile(localCoordinates: (x: 0, y: 0)),
-                Tile(localCoordinates: (x: 1, y: 0)),
-                Tile(localCoordinates: (x: 0, y: 1)),
-                Tile(localCoordinates: (x: 1, y: 1)),
+            coordinates = [
+                (0, 0),
+                (1, 0),
+                (0, 1),
+                (1, 1),
             ];
+            color = UIColor(red: 155.0/255.0, green: 89.0/255.0, blue: 182.0/255.0, alpha: 1.0)
         case 1:
             //
             //  [ ]
             //  [ ]
             //  [ ]
             //  [ ]
-            //
-            tiles = [
-                Tile(localCoordinates: (x: 0, y: 0)),
-                Tile(localCoordinates: (x: 1, y: 0)),
-                Tile(localCoordinates: (x: 2, y: 0)),
-                Tile(localCoordinates: (x: 3, y: 0)),
-            ];
+            //#e67e22
+            coordinates = [
+                (0, 0),
+                (1, 0),
+                (2, 0),
+                (3, 0),
+            ]
+            color = UIColor(red: 230.0/255.0, green: 126.0/255.0, blue: 34.0/255.0, alpha: 1.0)
         case 2:
             //
             //  [ ]
             //  [ ]
             //  [ ][ ]
             //
-            tiles = [
-                Tile(localCoordinates: (x: 0, y: 0)),
-                Tile(localCoordinates: (x: 0, y: 1)),
-                Tile(localCoordinates: (x: 0, y: 2)),
-                Tile(localCoordinates: (x: 1, y: 2)),
+            coordinates = [
+                (0, 0),
+                (0, 1),
+                (0, 2),
+                (1, 2),
             ];
+            color = UIColor(red: 46.0/255.0, green: 204.0/255.0, blue: 113.0/255.0, alpha: 1.0)
         case 3:
             //
             //  [ ][ ]
             //  [ ]
             //  [ ]
-            //
-            tiles = [
-                Tile(localCoordinates: (x: 0, y: 0)),
-                Tile(localCoordinates: (x: 1, y: 0)),
-                Tile(localCoordinates: (x: 0, y: 1)),
-                Tile(localCoordinates: (x: 0, y: 2)),
+            //#f1c40f
+            coordinates = [
+                (0, 0),
+                (1, 0),
+                (0, 1),
+                (0, 2),
             ];
+            color = UIColor(red: 241.0/255.0, green: 196.0/255.0, blue: 15.0/255.0, alpha: 1.0)
         case 4:
             //
             //  [ ]
             //  [ ][ ]
             //  [ ]
-            //
-            tiles = [
-                Tile(localCoordinates: (x: 0, y: 0)),
-                Tile(localCoordinates: (x: 0, y: 1)),
-                Tile(localCoordinates: (x: 1, y: 1)),
-                Tile(localCoordinates: (x: 0, y: 2)),
+            //#3498db
+            coordinates = [
+                (0, 0),
+                (0, 1),
+                (1, 1),
+                (0, 2),
             ];
+            color = UIColor(red: 52.0/255.0, green: 152.0/255.0, blue: 219.0/255.0, alpha: 1.0)
         case 5:
             //
             //  [ ]
             //  [ ][ ]
             //     [ ]
-            //
-            tiles = [
-                Tile(localCoordinates: (x: 0, y: 0)),
-                Tile(localCoordinates: (x: 0, y: 1)),
-                Tile(localCoordinates: (x: 1, y: 1)),
-                Tile(localCoordinates: (x: 1, y: 2)),
+            //#c0392b
+            coordinates = [
+                (0, 0),
+                (0, 1),
+                (1, 1),
+                (1, 2),
             ];
+            color = UIColor(red: 192.0/255.0, green: 57.0/255.0, blue: 43.0/255.0, alpha: 1.0)
         case 6:
             //
             //     [ ]
             //  [ ][ ]
             //  [ ]
-            //
-            tiles = [
-                Tile(localCoordinates: (x: 1, y: 0)),
-                Tile(localCoordinates: (x: 1, y: 1)),
-                Tile(localCoordinates: (x: 0, y: 1)),
-                Tile(localCoordinates: (x: 0, y: 2)),
+            //#2980b9
+            coordinates = [
+                (1, 0),
+                (1, 1),
+                (0, 1),
+                (0, 2),
             ];
+            color = UIColor(red: 41.0/255.0, green: 128.0/255.0, blue: 185.0/255.0, alpha: 1.0)
         default:
             break
         }
         
-        return Tetromino(tiles: tiles)
+        return Tetromino(tiles: coordinates.map { (coordinate) -> Tile in
+            let tile = Tile(localCoordinates: coordinate)
+            tile.color = color
+            return tile
+        })
     }
     
     /// Sets the x coordinate of the current tetromino
@@ -239,7 +269,7 @@ class Game {
             let oldXCoordinate = unwrappedTetromino.rootTile.worldCoordinates.x
             let moveBy = xCoordinate - oldXCoordinate
             for i in 0..<abs(moveBy) {
-                move(moveBy < 0 ? .Left : .Right)
+                if !move(moveBy < 0 ? .Left : .Right) { break }
             }
         }
     }

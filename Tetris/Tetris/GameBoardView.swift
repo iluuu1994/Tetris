@@ -8,20 +8,19 @@
 
 import UIKit
 
-class GameBoardView: UIView {
+class GameBoardView: UIView, GameDelegate {
     
     /// An instance of a game
     let game = Game()
     
     /// The timer that calls step() on the game instance
-    var timer: NSTimer?
+    var timer: NSTimer!
     
     required init(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         
-        // Pan
-        let panGestureRecognizer = UIPanGestureRecognizer(target: self, action: "panGesture:")
-        addGestureRecognizer(panGestureRecognizer)
+        // Set the game delegate
+        game.delegate = self
         
         // Swipe down
         let swipeRecognizer = UISwipeGestureRecognizer(target: self, action: "swipeGesture:")
@@ -39,8 +38,29 @@ class GameBoardView: UIView {
         
         // Start the timer
         timer = NSTimer(timeInterval: 1, target: self, selector: "step", userInfo: nil, repeats: true)
-        NSRunLoop.mainRunLoop().addTimer(timer!, forMode: NSDefaultRunLoopMode)
+        NSRunLoop.mainRunLoop().addTimer(timer, forMode: NSDefaultRunLoopMode)
     }
+    
+    deinit {
+        timer.invalidate()
+    }
+    
+    /// Moves the current tetromino one row down
+    func step() {
+        game.step()
+        setNeedsDisplay()
+    }
+    
+    
+    // MARK: - GameDelegate -
+    
+    /// Called when the game is over
+    func gameOver() {
+        println("Game over!")
+    }
+    
+    
+    // MARK: - Rendering -
     
     /// Debug draw all tiles
     override func drawRect(rect: CGRect) {
@@ -53,19 +73,74 @@ class GameBoardView: UIView {
         
         if let tetromino = game.currentTetromino {
             for tile in tetromino.rootTile.subTiles {
-                UIColor(white: 0.0, alpha: 1.0).set()
-                UIRectFill(rectOfTileCoordinates(tile.worldCoordinates))
+                _drawTile(tile)
             }
         }
         
         for (x, y, tile) in game.grid {
-            UIColor(white: 0.0, alpha: 1.0).set()
             if let unwrappedTile = tile {
-                UIColor(white: 0.0, alpha: 1.0).set()
-                UIRectFill(rectOfTileCoordinates(unwrappedTile.worldCoordinates))
+                _drawTile(unwrappedTile)
             }
         }
     }
+    
+    /// Draws a tile
+    func _drawTile(tile: Tile) {
+        (tile.color ?? UIColor(white: 0.0, alpha: 1.0)).set()
+        UIRectFill(rectOfTileCoordinates(tile.worldCoordinates))
+    }
+    
+    
+    // MARK: - Gestures -
+    
+    var deltaXCoordinate: Float?
+    
+    /// Called for manual handling of touches
+    override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
+        if touches.count == 1 {
+            let initialTouchPosition = touches.allObjects[0].locationInView(self)
+            let tetrominoXCoord = rectOfTileCoordinates(game.currentTetromino!.rootTile.worldCoordinates)
+            deltaXCoordinate = Float(tetrominoXCoord.origin.x - initialTouchPosition.x)
+        }
+    }
+    
+    /// Called when a touch moved
+    override func touchesMoved(touches: NSSet, withEvent event: UIEvent) {
+        if touches.count == 1 {
+            let touchPosition = touches.allObjects[0].locationInView(self)
+            let xCoordinate = xCoordinateForPoint(Float(touchPosition.x) + deltaXCoordinate!)
+            game.setXCoordinateForCurrentTetromino(xCoordinate)
+        }
+        
+        setNeedsDisplay()
+    }
+    
+    /// Called when we swipe down
+    func swipeGesture(gestureRecognizer: UISwipeGestureRecognizer) {
+        game.drop()
+        setNeedsDisplay()
+    }
+    
+    func doubleTapGesture(gestureRecognizer: UITapGestureRecognizer) {
+        game.drop()
+        setNeedsDisplay()
+    }
+    
+    /// Called when we tap the view
+    func tapGesture(gestureRecognizer: UITapGestureRecognizer) {
+        game.rotate()
+        setNeedsDisplay()
+    }
+    
+    /// Called when we pan
+    func panGesture(gestureRecognizer: UIPanGestureRecognizer) {
+        let point = gestureRecognizer.translationInView(self)
+        game.setXCoordinateForCurrentTetromino(xCoordinateForPoint(Float(point.x)))
+        setNeedsDisplay()
+    }
+    
+    
+    // MARK: - Helpers -
     
     /// Gets the rect of tile coordinates
     func rectOfTileCoordinates(tileCoordinates: TileCoordinates) -> CGRect {
@@ -93,35 +168,5 @@ class GameBoardView: UIView {
             width: CGFloat(size),
             height: CGFloat(size)
         )
-    }
-    
-    /// Called when we swipe down
-    func swipeGesture(gestureRecognizer: UISwipeGestureRecognizer) {
-        game.drop()
-        setNeedsDisplay()
-    }
-    
-    func doubleTapGesture(gestureRecognizer: UITapGestureRecognizer) {
-        game.drop()
-        setNeedsDisplay()
-    }
-    
-    /// Called when we tap the view
-    func tapGesture(gestureRecognizer: UITapGestureRecognizer) {
-        game.rotate()
-        setNeedsDisplay()
-    }
-    
-    /// Called when we pan
-    func panGesture(gestureRecognizer: UIPanGestureRecognizer) {
-        let point = gestureRecognizer.translationInView(self)
-        game.setXCoordinateForCurrentTetromino(xCoordinateForPoint(Float(point.x)))
-        setNeedsDisplay()
-    }
-    
-    /// Moves the current tetromino one row down
-    func step() {
-        game.step()
-        setNeedsDisplay()
     }
 }

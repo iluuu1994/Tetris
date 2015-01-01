@@ -6,7 +6,7 @@
 //  Copyright (c) 2014 Ilija Tovilo. All rights reserved.
 //
 
-import Foundation
+import UIKit
 
 /// Represent the 2d coordinates of a tile
 typealias TileCoordinates = (x: Int, y: Int)
@@ -19,6 +19,9 @@ class Tile: Equatable {
     
     /// The children of the tile
     private(set) var subTiles: [Tile] = []
+    
+    /// The color that the tile is rendered in
+    var color: UIColor?
     
     /// The coordinates the tile is currently positioned in
     var localCoordinates: TileCoordinates
@@ -36,7 +39,7 @@ class Tile: Equatable {
     
     /// The designated initializer
     required init(localCoordinates: TileCoordinates) {
-        self.localCoordinates = localCoordinates;
+        self.localCoordinates = localCoordinates
     }
     
     /// Adds the tile as a sub tile

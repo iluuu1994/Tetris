@@ -19,6 +19,7 @@
 		9126A1DC1A4C70C1002E6A3C /* Tile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9126A1DB1A4C70C1002E6A3C /* Tile.swift */; };
 		9126A1DF1A4C7131002E6A3C /* Matrix.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9126A1DE1A4C7131002E6A3C /* Matrix.swift */; };
 		9126A1E31A4D8F55002E6A3C /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9126A1E21A4D8F55002E6A3C /* Extensions.swift */; };
+		9145D71A1A5578AB00C299AC /* GameDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9145D7191A5578AB00C299AC /* GameDelegate.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -48,6 +49,7 @@
 		9126A1DB1A4C70C1002E6A3C /* Tile.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Tile.swift; sourceTree = "<group>"; };
 		9126A1DE1A4C7131002E6A3C /* Matrix.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Matrix.swift; sourceTree = "<group>"; };
 		9126A1E21A4D8F55002E6A3C /* Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
+		9145D7191A5578AB00C299AC /* GameDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameDelegate.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -139,6 +141,7 @@
 			isa = PBXGroup;
 			children = (
 				9126A1D71A4C5D82002E6A3C /* Game.swift */,
+				9145D7191A5578AB00C299AC /* GameDelegate.swift */,
 				9126A1D91A4C70B5002E6A3C /* Tetromino.swift */,
 				9126A1DB1A4C70C1002E6A3C /* Tile.swift */,
 			);
@@ -265,6 +268,7 @@
 				9126A1B31A4C5CC6002E6A3C /* ViewController.swift in Sources */,
 				9126A1E31A4D8F55002E6A3C /* Extensions.swift in Sources */,
 				9126A1D81A4C5D82002E6A3C /* Game.swift in Sources */,
+				9145D71A1A5578AB00C299AC /* GameDelegate.swift in Sources */,
 				9126A1DC1A4C70C1002E6A3C /* Tile.swift in Sources */,
 				9126A1DF1A4C7131002E6A3C /* Matrix.swift in Sources */,
 				9126A1B11A4C5CC6002E6A3C /* AppDelegate.swift in Sources */,
